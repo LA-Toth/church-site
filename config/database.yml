@@ -20,10 +20,11 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  schema_search_path: <%= ENV.fetch("DATABASE_SCHEMA") { "churchsite" } %>
 
 development:
   <<: *default
-  database: church_site_development
+  database: <%= ENV.fetch("DATABASE_NAME") { 'churchsite-dev' } %>
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -57,7 +58,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: church_site_test
+  database: <%= ENV.fetch("DATABASE_TEST_NAME") { 'churchsite-test' } %>
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -80,6 +81,6 @@ test:
 #
 production:
   <<: *default
-  database: church_site_production
-  username: church_site
-  password: <%= ENV['CHURCH_SITE_DATABASE_PASSWORD'] %>
+  database: <%= ENV.fetch("DATABASE_NAME") { 'churchsite' } %>
+  username: <%= ENV.fetch("DATABASE_USER") { 'churchsite' } %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
