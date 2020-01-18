@@ -41,6 +41,8 @@ module ChurchSite
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    config.autoload_paths << Rails.root.join('lib')
+
     config.action_dispatch.default_headers = {
       'Access-Control-Allow-Origin' => "http://client.#{ENV.fetch('API_DOMAINNAME') { 'lvh.me' }}",
       'Access-Control-Request-Method' => %w[GET POST OPTIONS].join(',')
