@@ -7,10 +7,10 @@ RSpec.describe HealthcheckController, type: :controller do
       expect(response).to have_http_status(:success)
     end
 
-    it 'responds with {"success": true}' do
+    it 'responds with {"success": true, "logged_in": false}' do
       get :index
       response_body = JSON.parse(response.body)
-      expect(response_body).to eql('success' => true)
+      expect(response_body).to eql('success' => true, 'logged_in' => false)
     end
   end
 end
