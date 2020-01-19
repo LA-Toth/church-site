@@ -1,0 +1,33 @@
+#!/bin/bash
+
+CACHED_CHANGES=$(git diff --cached --name-only --diff-filter=AM)
+UNSTAGED_CHANGES=$(git diff --name-only --diff-filter=AM)
+CHANGES="$CACHED_CHANGES"$'\n'"$UNSTAGED_CHANGES"
+
+RUBY_CHANGES=$(printf "%b\n" $CACHED_CHANGES | grep -E "\.e?rb$")
+
+ROOT=$(git rev-parse --show-toplevel)
+
+pushd $ROOT > /dev/null
+
+FAILURES=0
+function collect_failures() {
+  if [[ $? -ne 0 ]]; then
+    FAILURES=$((FAILURES + 1))
+  fi
+}
+
+if [ -n "$RUBY_CHANGES" ]; then
+  GIT_DIR=$(pwd)/.git bundle exec rubocop $RUBY_CHANGES --fail-level autocorrect --force-exclusion --auto-correct
+  collect_failures
+fi
+
+popd > /dev/null
+
+if [[ $PRECOMMIT_STRICT -gt 0 && $UNSTAGED_CHANGES != "" ]]; then
+  echo "Unstaged changes!"
+  exit 1
+fi
+
+(( FAILURES > 0 )) && exit 1
+exit 0
