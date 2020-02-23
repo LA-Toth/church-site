@@ -43,9 +43,13 @@ module ChurchSite
 
     config.autoload_paths << Rails.root.join('lib')
 
-    config.action_dispatch.default_headers = {
-      'Access-Control-Allow-Origin' => "http://client.#{ENV.fetch('API_DOMAINNAME') { 'lvh.me' }}",
-      'Access-Control-Request-Method' => %w[GET POST OPTIONS].join(',')
-    }
+    config.hosts << 'api.lvh.me' if Rails.env.development?
+
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins ENV.fetch('CORS_ALLOWED_CLIENT') { 'http://client.' + ENV.fetch('API_DOMAINNAME') { 'lvh.me' } }
+        resource '*', headers: :any, methods: %i[get post options]
+      end
+    end
   end
 end
